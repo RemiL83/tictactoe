@@ -12,6 +12,10 @@ const spiller1 = 1;
 const spiller2 = -1;
 let spiller = spiller1;
 let resultatAvSpill = "";
+let spiller1Navn;
+let spiller2Navn;
+
+await hentSpillerNavn();
 
 while (true) {
     await hovedSpill();
@@ -26,11 +30,16 @@ while (true) {
 
 //#endregion---------------------------------------------------------------------------------------
 
+async function hentSpillerNavn() {
+    spiller1Navn = await rl.question(`Navn på spiller 1?\n`);
+    spiller2Navn = await rl.question(`Navn på spiller 2?\n`);
+}
+
 function spillerNavn(sp = spiller) {
     if (sp == spiller1) {
-        return "spiller 1(X)";
+        return `${spiller1Navn} (X)`;
     } else {
-        return "spiller 2(O)";
+        return `${spiller2Navn} (O)`;
     }
 }
 
