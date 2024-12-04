@@ -87,8 +87,8 @@ async function hovedSpill() {
         visBrett(brett);
         console.log(`Det er ${spillerNavn(spiller)} sin tur.\n`);
 
-        let rad = -1;
-        let kolonne = -1;
+        let rad;
+        let kolonne;
 
         do {
             let pos = await rl.question(`Skriv 'rad,kolonne' (f.eks: 1,1), og trykk enter for å sette merket ditt. Skriv 'q' for å avslutte.\n`);
@@ -97,12 +97,26 @@ async function hovedSpill() {
                 console.log(`Velkommen igjen.`);
                 process.exit();
             }
-            [rad, kolonne] = pos.split(",")
 
-            rad = rad - 1;
-            kolonne = kolonne - 1;
+            [rad, kolonne] = pos.split(",");                       
+            rad = parseInt(rad) - 1;
+            kolonne = parseInt(kolonne) - 1;
 
-        } while (brett[rad][kolonne] != 0)
+            if (isNaN(rad) || isNaN(kolonne) || rad < 0 || rad > 2 || kolonne < 0 || kolonne > 2) {
+                console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
+                visBrett(brett);
+                console.log(`Ugyldig plassering. Vennligst prøv igjen.\n`);
+                continue;                
+            }
+
+            if (brett[rad][kolonne] !==0) {
+                console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
+                visBrett(brett);
+                console.log(`Opptatt plass. Vennligst prøv igjen.\n`);
+                continue;
+            }
+            break;
+        } while (true)
 
         brett[rad][kolonne] = spiller;
 
