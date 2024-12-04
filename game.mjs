@@ -7,6 +7,7 @@ const rl = readlinePromises.createInterface({
 //#endregion
 
 import ANSI from "./ANSI.mjs"
+import dictionary from "./dictionary.mjs"
 
 const spiller1 = 1;
 const spiller2 = -1;
@@ -15,24 +16,39 @@ let resultatAvSpill = "";
 let spiller1Navn;
 let spiller2Navn;
 
+console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
 await hentSpillerNavn();
 
 while (true) {
     await hovedSpill();
     const sluttvalg = await visMeny();
-    if (sluttvalg === 'r') {
+    if (sluttvalg === dictionary.omstart) {
     } else {
         console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
-        console.log(`Takk for spillet. Velkommen igjen.`);
+        console.log(dictionary.sluttMelding);
         process.exit();
     }
 }
 
-//#endregion---------------------------------------------------------------------------------------
-
 async function hentSpillerNavn() {
-    spiller1Navn = await rl.question(`Navn på spiller 1?\n`);
-    spiller2Navn = await rl.question(`Navn på spiller 2?\n`);
+    while (true) {
+        spiller1Navn = await rl.question(dictionary.spiller1Spoersmaal);
+        if (spiller1Navn.length > 10) {
+            console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
+            console.log(dictionary.forLangtNavn);            
+        } else {
+            break;
+        }
+    }
+    while (true) {
+        spiller2Navn = await rl.question(dictionary.spiller2Spoersmaal);
+        if (spiller2Navn.length > 10) {
+            console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
+            console.log(dictionary.forLangtNavn);
+        } else {
+            break;
+        }
+    }
 }
 
 function spillerNavn(sp = spiller) {
@@ -100,10 +116,10 @@ async function hovedSpill() {
         let kolonne;
 
         do {
-            let pos = await rl.question(`Skriv 'rad,kolonne' (f.eks: 1,1), og trykk enter for å sette merket ditt. Skriv 'q' for å avslutte.\n`);
-            if (pos.trim().toLowerCase() === 'q') {
+            let pos = await rl.question(dictionary.spillInstruks);
+            if (pos.trim().toLowerCase() === dictionary.avslutt) {
                 console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
-                console.log(`Velkommen igjen.`);
+                console.log(dictionary.sluttMelding);
                 process.exit();
             }
 
@@ -114,14 +130,14 @@ async function hovedSpill() {
             if (isNaN(rad) || isNaN(kolonne) || rad < 0 || rad > 2 || kolonne < 0 || kolonne > 2) {
                 console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
                 visBrett(brett);
-                console.log(`Ugyldig plassering. Vennligst prøv igjen.\n`);
+                console.log(dictionary.ugyldigPlassering);
                 continue;                
             }
 
             if (brett[rad][kolonne] !==0) {
                 console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
                 visBrett(brett);
-                console.log(`Opptatt plass. Vennligst prøv igjen.\n`);
+                console.log(dictionary.opptattPlass);
                 continue;
             }
             break;
@@ -135,7 +151,7 @@ async function hovedSpill() {
             isGameOver = true;
 
         } else if (erSpilletUavgjort(brett)) {
-            resultatAvSpill = "Det ble uavgjort.\n";
+            resultatAvSpill = dictionary.uavgjortMelding;
             isGameOver = true;
         }
         byttAktivSpiller();
@@ -201,8 +217,8 @@ function erSpilletUavgjort(brett) {
 
 async function visMeny() {
     while (true) {
-        const valg = await rl.question(`Skriv 'r' for å spille på nytt eller 'q' for å avslutte.\n`);
-        if (valg === 'r' || valg === 'q') {
+        const valg = await rl.question(dictionary.omstartAvsluttMelding);
+        if (valg === dictionary.omstart || valg === dictionary.avslutt) {
             return valg;
         }
     }
